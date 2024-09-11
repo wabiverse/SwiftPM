@@ -71,9 +71,10 @@ extension PercentSingleLineProgressAnimation: ProgressAnimationProtocol2 {
         self.terminal.flush()
     }
 
-    func draw() {}
+    func interleave(_ bytes: some Collection<UInt8>) {
+        self.terminal.write(bytes)
+        self.terminal.flush()
+    }
 
     func complete() {}
-
-    func clear() {}
 }

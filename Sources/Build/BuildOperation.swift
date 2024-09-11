@@ -828,7 +828,6 @@ public final class BuildOperation: PackageStructureDelegate, SPMBuildCore.BuildS
         let progressTracker = LLBuildProgressTracker(
             buildSystem: self,
             buildExecutionContext: buildExecutionContext,
-            outputStream: config.outputStream,
             progressAnimation: progressAnimation,
             logLevel: config.logLevel,
             observabilityScope: config.observabilityScope,

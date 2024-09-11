@@ -65,18 +65,15 @@ extension PercentRedrawingProgressAnimation: ProgressAnimationProtocol2 {
         self._flush()
     }
 
-    func draw() {
+    func interleave(_ bytes: some Collection<UInt8>) {
+        self._clear()
+        self.terminal.write(bytes)
         self._draw()
         self._flush()
     }
 
     func complete() {
         self._complete()
-        self._flush()
-    }
-
-    func clear() {
-        self._clear()
         self._flush()
     }
 }

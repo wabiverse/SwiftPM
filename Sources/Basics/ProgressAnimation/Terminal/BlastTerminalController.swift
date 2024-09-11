@@ -26,7 +26,12 @@ struct BlastTerminalController {
 
     /// Writes a string to the stream.
     mutating func write(_ text: String) {
-        self.buffer.write(text)
+        self.buffer.write(text.utf8)
+    }
+
+    /// Writes bytes to the stream.
+    mutating func write(_ bytes: some Collection<UInt8>) {
+        self.buffer.write(bytes)
     }
 
     mutating func newLine() {

@@ -90,20 +90,19 @@ extension BlastProgressAnimation: ProgressAnimationProtocol2 {
         self._flush()
     }
 
-    func draw() {
-        guard self.interactive else { return }
-        self._draw()
+    func interleave(_ bytes: some Collection<UInt8>) {
+        if self.interactive { 
+            self._clear()
+        }
+        self.terminal.write(bytes)
+        if self.interactive { 
+            self._draw()
+        }
         self._flush()
     }
 
     func complete() {
         self._complete()
-        self._flush()
-    }
-
-    func clear() {
-        guard self.interactive else { return }
-        self._clear()
         self._flush()
     }
 }

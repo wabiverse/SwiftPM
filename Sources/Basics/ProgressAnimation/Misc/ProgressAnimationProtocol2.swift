@@ -27,12 +27,16 @@ package protocol ProgressAnimationProtocol2 {
         event: ProgressTaskState,
         at time: ContinuousClock.Instant)
 
+    /// Interleave some other output with the progress animation.
+    func interleave(_ bytes: some Collection<UInt8>)
+
     /// Complete the animation.
     func complete()
+}
 
-    /// Draw the animation.
-    func draw()
-
-    /// Clear the animation.
-    func clear()
+extension ProgressAnimationProtocol2 {
+    /// Interleave some other output with the progress animation.
+    package func interleave(_ text: String) {
+        self.interleave(text.utf8)
+    }
 }

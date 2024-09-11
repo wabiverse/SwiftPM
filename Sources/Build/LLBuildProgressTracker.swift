@@ -136,7 +136,6 @@ public protocol PackageStructureDelegate {
 
 /// Convenient llbuild build system delegate implementation
 final class LLBuildProgressTracker: LLBuildBuildSystemDelegate, SwiftCompilerOutputParserDelegate {
-    private let outputStream: ThreadSafeOutputByteStream
     private let progressAnimation: ProgressAnimationProtocol2
     private let logLevel: Basics.Diagnostic.Severity
     private weak var delegate: SPMBuildCore.BuildSystemDelegate?
@@ -159,7 +158,6 @@ final class LLBuildProgressTracker: LLBuildBuildSystemDelegate, SwiftCompilerOut
     init(
         buildSystem: SPMBuildCore.BuildSystem,
         buildExecutionContext: BuildExecutionContext,
-        outputStream: OutputByteStream,
         progressAnimation: ProgressAnimationProtocol2,
         logLevel: Basics.Diagnostic.Severity,
         observabilityScope: ObservabilityScope,
@@ -167,9 +165,6 @@ final class LLBuildProgressTracker: LLBuildBuildSystemDelegate, SwiftCompilerOut
     ) {
         self.buildSystem = buildSystem
         self.buildExecutionContext = buildExecutionContext
-        // FIXME: Implement a class convenience initializer that does this once they are supported
-        // https://forums.swift.org/t/allow-self-x-in-class-convenience-initializers/15924
-        self.outputStream = outputStream as? ThreadSafeOutputByteStream ?? ThreadSafeOutputByteStream(outputStream)
         self.progressAnimation = progressAnimation
         self.taskTracker = .init(progressAnimation: progressAnimation)
         self.logLevel = logLevel
@@ -256,9 +251,7 @@ final class LLBuildProgressTracker: LLBuildBuildSystemDelegate, SwiftCompilerOut
             self.delegate?.buildSystem(self.buildSystem, didStartCommand: BuildSystemCommand(command))
 
             if self.logLevel.isVerbose {
-                self.progressAnimation.clear()
-                self.outputStream.send("\(command.verboseDescription)\n")
-                self.outputStream.flush()
+                self.progressAnimation.interleave("\(command.verboseDescription)\n")
             }
 
             self.taskTracker.commandStarted(
@@ -341,9 +334,7 @@ final class LLBuildProgressTracker: LLBuildBuildSystemDelegate, SwiftCompilerOut
             .result != .failed
         self.queue.async {
             if let buffer = self.nonSwiftMessageBuffers[command.name], !shouldFilterOutput {
-                self.progressAnimation.clear()
-                self.outputStream.send(buffer)
-                self.outputStream.flush()
+                self.progressAnimation.interleave(buffer)
                 self.nonSwiftMessageBuffers[command.name] = nil
             }
         }
@@ -365,8 +356,7 @@ final class LLBuildProgressTracker: LLBuildBuildSystemDelegate, SwiftCompilerOut
                         command: command.name,
                         message: errorMessage
                     ) {
-                        self.outputStream.send("note: \(adviceMessage)\n")
-                        self.outputStream.flush()
+                        self.progressAnimation.interleave("note: \(adviceMessage)\n")
                     }
                 }
             }
@@ -400,11 +390,9 @@ final class LLBuildProgressTracker: LLBuildBuildSystemDelegate, SwiftCompilerOut
     /// Invoked when an action taken before building emits output.
     /// when verboseOnly is set to true, the output will only be printed in verbose logging mode
     func preparationStepHadOutput(_ name: String, output: String, verboseOnly: Bool) {
-        self.queue.async {
-            if !verboseOnly || self.logLevel.isVerbose {
-                self.progressAnimation.clear()
-                self.outputStream.send("\(output.spm_chomp())\n")
-                self.outputStream.flush()
+        if !verboseOnly || self.logLevel.isVerbose {
+            self.queue.async {
+                self.progressAnimation.interleave("\(output.spm_chomp())\n")
             }
         }
     }
@@ -423,15 +411,11 @@ final class LLBuildProgressTracker: LLBuildBuildSystemDelegate, SwiftCompilerOut
         let now = ContinuousClock.now
         self.queue.async {
             if self.logLevel.isVerbose, let text = message.verboseProgressText {
-                self.progressAnimation.clear()
-                self.outputStream.send("\(text)\n")
-                self.outputStream.flush()
+                self.progressAnimation.interleave("\(text)\n")
             }
 
             if let output = message.standardOutput {
-                self.progressAnimation.clear()
-                self.outputStream.send(output)
-                self.outputStream.flush()
+                self.progressAnimation.interleave(output)
 
                 // next we want to try and scoop out any errors from the output (if reasonable size, otherwise this
                 // will be very slow), so they can later be passed to the advice provider in case of failure.
@@ -462,9 +446,7 @@ final class LLBuildProgressTracker: LLBuildBuildSystemDelegate, SwiftCompilerOut
         action: String
     ) {
         self.queue.sync {
-            self.progressAnimation.clear()
-            self.outputStream.send("\(action) for \(configuration == .debug ? "debugging" : "production")...\n")
-            self.outputStream.flush()
+            self.progressAnimation.interleave("\(action) for \(configuration == .debug ? "debugging" : "production")...\n")
         }
     }
 
@@ -483,10 +465,8 @@ final class LLBuildProgressTracker: LLBuildBuildSystemDelegate, SwiftCompilerOut
         self.queue.sync {
             self.progressAnimation.complete()
             if success {
-                self.progressAnimation.clear()
                 let result = self.cancelled ? "cancelled" : "complete"
-                self.outputStream.send("\(action) \(subsetString)\(result)! (\(duration.descriptionInSeconds))\n")
-                self.outputStream.flush()
+                self.progressAnimation.interleave("\(action) \(subsetString)\(result)! (\(duration.descriptionInSeconds))\n")
             }
         }
     }
