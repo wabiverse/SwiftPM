@@ -13,7 +13,7 @@
 import protocol TSCBasic.WritableByteStream
 
 // TODO: This protocol could be extended to handle a task tree
-package protocol ProgressAnimationProtocol2 {
+package protocol ProgressAnimationProtocol {
     init(
         stream: any WritableByteStream,
         coloring: TerminalColoring,
@@ -34,7 +34,7 @@ package protocol ProgressAnimationProtocol2 {
     func complete()
 }
 
-extension ProgressAnimationProtocol2 {
+extension ProgressAnimationProtocol {
     /// Interleave some other output with the progress animation.
     package func interleave(_ text: String) {
         self.interleave(text.utf8)

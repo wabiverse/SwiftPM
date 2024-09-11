@@ -1023,7 +1023,7 @@ final class ParallelTestRunner {
     private let finishedTests = SynchronizedQueue<TestResult?>()
 
     /// Instance of a terminal progress animation.
-    private let progressAnimation: ProgressAnimationProtocol2
+    private let progressAnimation: ProgressAnimationProtocol
     private let paLock = NSLock()
 
     /// Number of tests that will be executed.

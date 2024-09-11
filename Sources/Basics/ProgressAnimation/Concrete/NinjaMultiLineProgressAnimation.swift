@@ -15,7 +15,7 @@ import protocol TSCBasic.WritableByteStream
 /// A multi-line ninja-like progress animation.
 final class NinjaMultiLineProgressAnimation {
     // Dependencies
-    var terminal: BlastTerminalController
+    var terminal: TerminalController
 
     // Internal state
     var text: String
@@ -28,7 +28,7 @@ final class NinjaMultiLineProgressAnimation {
         verbose: Bool,
         header: String?
     ) {
-        self.terminal = BlastTerminalController(
+        self.terminal = TerminalController(
             stream: stream,
             coloring: coloring)
         self.text = ""
@@ -36,7 +36,7 @@ final class NinjaMultiLineProgressAnimation {
     }
 }
 
-extension NinjaMultiLineProgressAnimation: ProgressAnimationProtocol2 {
+extension NinjaMultiLineProgressAnimation: ProgressAnimationProtocol {
     func update(
         id: Int,
         name: String,

@@ -13,7 +13,7 @@
 /// A simple buffer to accumulate output bytes into.
 ///
 /// This buffer never shrinks.
-struct ProgressAnimationOutputBuffer {
+struct TerminalOutputBuffer {
     /// Initial buffer size of the data buffer.
     ///
     /// This buffer will grow if more space is needed.

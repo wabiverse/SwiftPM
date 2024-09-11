@@ -136,7 +136,7 @@ public protocol PackageStructureDelegate {
 
 /// Convenient llbuild build system delegate implementation
 final class LLBuildProgressTracker: LLBuildBuildSystemDelegate, SwiftCompilerOutputParserDelegate {
-    private let progressAnimation: ProgressAnimationProtocol2
+    private let progressAnimation: ProgressAnimationProtocol
     private let logLevel: Basics.Diagnostic.Severity
     private weak var delegate: SPMBuildCore.BuildSystemDelegate?
     private let buildSystem: SPMBuildCore.BuildSystem
@@ -158,7 +158,7 @@ final class LLBuildProgressTracker: LLBuildBuildSystemDelegate, SwiftCompilerOut
     init(
         buildSystem: SPMBuildCore.BuildSystem,
         buildExecutionContext: BuildExecutionContext,
-        progressAnimation: ProgressAnimationProtocol2,
+        progressAnimation: ProgressAnimationProtocol,
         logLevel: Basics.Diagnostic.Severity,
         observabilityScope: ObservabilityScope,
         delegate: SPMBuildCore.BuildSystemDelegate?
@@ -474,10 +474,10 @@ final class LLBuildProgressTracker: LLBuildBuildSystemDelegate, SwiftCompilerOut
 
 /// Tracks tasks based on command status and swift compiler output.
 private struct CommandTaskTracker {
-    var progressAnimation: any ProgressAnimationProtocol2
+    var progressAnimation: any ProgressAnimationProtocol
     var swiftTaskProgressTexts: [Int: String]
 
-    init(progressAnimation: ProgressAnimationProtocol2) {
+    init(progressAnimation: ProgressAnimationProtocol) {
         self.progressAnimation = progressAnimation
         self.swiftTaskProgressTexts = [:]
     }

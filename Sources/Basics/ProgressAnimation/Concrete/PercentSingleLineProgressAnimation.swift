@@ -13,7 +13,7 @@
 /// A single line percent-based progress animation.
 final class PercentSingleLineProgressAnimation {
     // Dependencies
-    var terminal: BlastTerminalController
+    var terminal: TerminalController
 
     // Configuration
     let header: String?
@@ -30,7 +30,7 @@ final class PercentSingleLineProgressAnimation {
         verbose: Bool,
         header: String?
     ) {
-        self.terminal = BlastTerminalController(
+        self.terminal = TerminalController(
             stream: stream,
             coloring: coloring)
         self.header = header
@@ -40,7 +40,7 @@ final class PercentSingleLineProgressAnimation {
     }
 }
 
-extension PercentSingleLineProgressAnimation: ProgressAnimationProtocol2 {
+extension PercentSingleLineProgressAnimation: ProgressAnimationProtocol {
     func update(
         id: Int,
         name: String,

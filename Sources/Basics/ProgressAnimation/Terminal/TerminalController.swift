@@ -12,13 +12,19 @@
 
 import class TSCBasic.BufferedOutputByteStream
 import protocol TSCBasic.WritableByteStream
+import TSCLibc
+#if os(Windows)
+import CRT
+#endif
 
-struct BlastTerminalController {
+struct TerminalController {
     var stream: WritableByteStream
-    var buffer: ProgressAnimationOutputBuffer
+    var buffer: TerminalOutputBuffer
     var coloring: TerminalColoring
 
     init(stream: WritableByteStream, coloring: TerminalColoring) {
+        // This feels like a very bad place to run this side-effect
+        Self.enableVT100Interpretation()
         self.stream = stream
         self.buffer = .init()
         self.coloring = coloring
@@ -50,7 +56,60 @@ struct BlastTerminalController {
     }
 }
 
-extension BlastTerminalController {
+extension TerminalController {
+    static func enableVT100Interpretation() {
+#if os(Windows)
+        let hOut = GetStdHandle(STD_OUTPUT_HANDLE)
+        var dwMode: DWORD = 0
+
+        guard hOut != INVALID_HANDLE_VALUE else { return nil }
+        guard GetConsoleMode(hOut, &dwMode) else { return nil }
+
+        dwMode |= DWORD(ENABLE_VIRTUAL_TERMINAL_PROCESSING)
+        guard SetConsoleMode(hOut, dwMode) else { return nil }
+#endif
+    }
+
+    /// Tries to get the terminal width first using COLUMNS env variable and
+    /// if that fails ioctl method testing on stdout stream.
+    ///
+    /// - Returns: Current width of terminal if it was determinable.
+    static func width() -> Int? {
+#if os(Windows)
+        var csbi: CONSOLE_SCREEN_BUFFER_INFO = CONSOLE_SCREEN_BUFFER_INFO()
+        if !GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &csbi) {
+          // GetLastError()
+          return nil
+        }
+        return Int(csbi.srWindow.Right - csbi.srWindow.Left) + 1
+#else
+        // Try to get from environment.
+        if let columns = Environment.current["COLUMNS"], let width = Int(columns) {
+            return width
+        }
+
+        // Try determining using ioctl.
+        // Following code does not compile on ppc64le well. TIOCGWINSZ is
+        // defined in system ioctl.h file which needs to be used. This is
+        // a temporary arrangement and needs to be fixed.
+#if !arch(powerpc64le)
+        var ws = winsize()
+#if os(OpenBSD)
+        let tiocgwinsz = 0x40087468
+        let err = ioctl(1, UInt(tiocgwinsz), &ws)
+#else
+        let err = ioctl(1, UInt(TIOCGWINSZ), &ws)
+#endif
+        if err == 0 {
+            return Int(ws.ws_col)
+        }
+#endif
+        return nil
+#endif
+    }
+}
+
+extension TerminalController {
     /// ESC character.
     private static let escape = "\u{001B}["
 

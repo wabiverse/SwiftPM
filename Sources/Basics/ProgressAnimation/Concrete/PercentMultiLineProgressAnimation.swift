@@ -13,7 +13,7 @@
 /// A multi-line percent-based progress animation.
 final class PercentMultiLineProgressAnimation {
     // Dependencies
-    var terminal: BlastTerminalController
+    var terminal: TerminalController
 
     // Internal state
     var header: String?
@@ -28,7 +28,7 @@ final class PercentMultiLineProgressAnimation {
         verbose: Bool,
         header: String?
     ) {
-        self.terminal = BlastTerminalController(
+        self.terminal = TerminalController(
             stream: stream,
             coloring: coloring)
         self.header = header
@@ -38,7 +38,7 @@ final class PercentMultiLineProgressAnimation {
     }
 }
 
-extension PercentMultiLineProgressAnimation: ProgressAnimationProtocol2 {
+extension PercentMultiLineProgressAnimation: ProgressAnimationProtocol {
     func update(
         id: Int,
         name: String,

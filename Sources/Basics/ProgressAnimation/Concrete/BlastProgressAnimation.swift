@@ -24,7 +24,7 @@ extension FormatStyle where Self == Duration.UnitsFormatStyle {
 
 class BlastProgressAnimation {
     // Dependencies
-    var terminal: BlastTerminalController
+    var terminal: TerminalController
 
     // Configuration
     var interactive: Bool
@@ -43,7 +43,7 @@ class BlastProgressAnimation {
         verbose: Bool,
         header: String?
     ) {
-        self.terminal = BlastTerminalController(
+        self.terminal = TerminalController(
             stream: stream,
             coloring: coloring)
         self.interactive = interactive
@@ -55,7 +55,7 @@ class BlastProgressAnimation {
     }
 }
 
-extension BlastProgressAnimation: ProgressAnimationProtocol2 {
+extension BlastProgressAnimation: ProgressAnimationProtocol {
     func update(
         id: Int,
         name: String,
@@ -73,7 +73,7 @@ extension BlastProgressAnimation: ProgressAnimationProtocol2 {
             self._clear()
         }
 
-        if self.verbose || true, case .completed(let duration) = state {
+        if self.verbose, case .completed(let duration) = state {
             self._draw(task: task, duration: duration)
             self.terminal.newLine()
         }

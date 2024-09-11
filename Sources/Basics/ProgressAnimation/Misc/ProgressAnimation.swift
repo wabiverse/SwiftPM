@@ -22,7 +22,7 @@ package enum ProgressAnimation {
     static func lit(
         interactive: Bool,
         verbose: Bool
-    ) -> ProgressAnimationProtocol2.Type {
+    ) -> ProgressAnimationProtocol.Type {
         if !interactive {
             PercentSingleLineProgressAnimation.self
         } else if !verbose {
@@ -37,7 +37,7 @@ package enum ProgressAnimation {
     static func ninja(
         interactive: Bool,
         verbose: Bool
-    ) -> ProgressAnimationProtocol2.Type {
+    ) -> ProgressAnimationProtocol.Type {
         if interactive {
             NinjaRedrawingProgressAnimation.self
         } else {
@@ -59,7 +59,7 @@ package enum ProgressAnimation {
         stream: WritableByteStream,
         verbose: Bool,
         header: String?
-    ) -> any ProgressAnimationProtocol2 {
+    ) -> any ProgressAnimationProtocol {
         let environmentBarStyle: ProgressAnimationStyle? =
             if environment["SWIFTPM_TEST_RUNNER_PROGRESS_BAR"] == "lit" {
                 .lit

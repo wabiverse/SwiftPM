@@ -13,7 +13,7 @@
 /// A redrawing ninja-like progress animation.
 final class NinjaRedrawingProgressAnimation {
     // Dependencies
-    var terminal: BlastTerminalController
+    var terminal: TerminalController
 
     // Internal state
     var text: String
@@ -27,7 +27,7 @@ final class NinjaRedrawingProgressAnimation {
         verbose: Bool,
         header: String?
     ) {
-        self.terminal = BlastTerminalController(
+        self.terminal = TerminalController(
             stream: stream,
             coloring: coloring)
         self.text = ""
@@ -36,7 +36,7 @@ final class NinjaRedrawingProgressAnimation {
     }
 }
 
-extension NinjaRedrawingProgressAnimation: ProgressAnimationProtocol2 {
+extension NinjaRedrawingProgressAnimation: ProgressAnimationProtocol {
     func update(
         id: Int,
         name: String,

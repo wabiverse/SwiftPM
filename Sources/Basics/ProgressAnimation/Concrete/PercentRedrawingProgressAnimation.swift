@@ -16,7 +16,7 @@ import protocol TSCBasic.WritableByteStream
 /// A redrawing lit-like progress animation.
 final class PercentRedrawingProgressAnimation {
     // Dependencies
-    var terminal: BlastTerminalController
+    var terminal: TerminalController
 
     // Configuration
     var header: String?
@@ -34,7 +34,7 @@ final class PercentRedrawingProgressAnimation {
         verbose: Bool,
         header: String?
     ) {
-        self.terminal = BlastTerminalController(
+        self.terminal = TerminalController(
             stream: stream,
             coloring: coloring)
         self.header = header
@@ -45,7 +45,7 @@ final class PercentRedrawingProgressAnimation {
     }
 }
 
-extension PercentRedrawingProgressAnimation: ProgressAnimationProtocol2 {
+extension PercentRedrawingProgressAnimation: ProgressAnimationProtocol {
     func update(
         id: Int,
         name: String,
