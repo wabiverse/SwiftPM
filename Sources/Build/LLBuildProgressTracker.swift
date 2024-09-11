@@ -444,11 +444,7 @@ final class LLBuildProgressTracker: LLBuildBuildSystemDelegate, SwiftCompilerOut
     func buildStart(
         configuration: BuildConfiguration,
         action: String
-    ) {
-        self.queue.sync {
-            self.progressAnimation.interleave("\(action) for \(configuration == .debug ? "debugging" : "production")...\n")
-        }
-    }
+    ) { }
 
     func buildComplete(
         success: Bool,
@@ -463,11 +459,9 @@ final class LLBuildProgressTracker: LLBuildBuildSystemDelegate, SwiftCompilerOut
         }
 
         self.queue.sync {
-            self.progressAnimation.complete()
-            if success {
-                let result = self.cancelled ? "cancelled" : "complete"
-                self.progressAnimation.interleave("\(action) \(subsetString)\(result)! (\(duration.descriptionInSeconds))\n")
-            }
+            let result = !success ? "failed" :
+                self.cancelled ? "cancelled" : "complete" 
+            self.progressAnimation.complete("\(action) \(subsetString)\(result)!")
         }
     }
 }

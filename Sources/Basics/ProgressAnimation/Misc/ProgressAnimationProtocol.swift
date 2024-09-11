@@ -31,7 +31,7 @@ package protocol ProgressAnimationProtocol {
     func interleave(_ bytes: some Collection<UInt8>)
 
     /// Complete the animation.
-    func complete()
+    func complete(_ message: String?)
 }
 
 extension ProgressAnimationProtocol {

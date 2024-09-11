@@ -63,8 +63,8 @@ extension NinjaRedrawingProgressAnimation: ProgressAnimationProtocol {
         self._flush()
     }
 
-    func complete() {
-        self._complete()
+    func complete(_ message: String?) {
+        self._complete(message)
         self._flush()
     }
 }
@@ -85,7 +85,8 @@ extension NinjaRedrawingProgressAnimation {
         self.hasDisplayedProgress = true
     }
 
-    func _complete() {
+    func _complete(_ message: String?) {
+        #warning("TODO")
         if self.hasDisplayedProgress {
             self.terminal.newLine()
         }

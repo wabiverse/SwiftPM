@@ -72,8 +72,8 @@ extension PercentRedrawingProgressAnimation: ProgressAnimationProtocol {
         self._flush()
     }
 
-    func complete() {
-        self._complete()
+    func complete(_ message: String?) {
+        self._complete(message)
         self._flush()
     }
 }
@@ -134,12 +134,15 @@ extension PercentRedrawingProgressAnimation {
         self.hasDisplayedProgress = true
     }
 
-    func _complete() {
+    func _complete(_ message: String?) {
         self._clear()
         guard self.hasDisplayedHeader else { return }
         self.terminal.carriageReturn()
         self.terminal.moveCursorUp(cells: 1)
         self.terminal.eraseLine(.entire)
+        if let message {
+            self.terminal.write(message)
+        }
     }
 
     func _clear() {

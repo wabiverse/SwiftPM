@@ -1195,7 +1195,7 @@ final class ParallelTestRunner {
 
         // Report the completion.
         _ = processedTests.get().contains(where: { !$0.success })
-        self.paLock.withLock { self.progressAnimation.complete() }
+        self.paLock.withLock { self.progressAnimation.complete("Testing complete") }
 
         // Print test results.
         for test in processedTests.get() {

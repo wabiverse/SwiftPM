@@ -43,14 +43,6 @@ package enum ProgressAnimation {
         } else {
             NinjaMultiLineProgressAnimation.self
         }
-
-//        if !interactive {
-//            PercentSingleLineProgressAnimation.self
-//        } else if !verbose {
-//            NinjaRedrawingProgressAnimation.self
-//        } else {
-//            NinjaMultiLineProgressAnimation.self
-//        }
     }
 
     package static func make(

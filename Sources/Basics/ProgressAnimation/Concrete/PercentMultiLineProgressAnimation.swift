@@ -72,5 +72,10 @@ extension PercentMultiLineProgressAnimation: ProgressAnimationProtocol {
         self.terminal.flush()
     }
 
-    func complete() {}
+    func complete(_ message: String?) {
+        if let message {
+            self.terminal.write(message)
+            self.terminal.flush()
+        }
+    }
 }

@@ -103,8 +103,8 @@ extension BlastProgressAnimation: ProgressAnimationProtocol {
         self._flush()
     }
 
-    func complete() {
-        self._complete()
+    func complete(_ message: String?) {
+        self._complete(message)
         self._flush()
     }
 }
@@ -151,13 +151,17 @@ extension BlastProgressAnimation {
         self.terminal.text(styles: .reset)
     }
 
+    func _drawMessage(_ message: String?) {
+        if let message {
+            self.terminal.write(" ")
+            self.terminal.write(message)
+        }
+    }
+
     func _draw() {
         assert(self.drawnLines == 0)
         self._drawStates()
-        if let header = self.header {
-            self.terminal.write(" ")
-            self.terminal.write(header)
-        }
+        self._drawMessage(self.header)
         self.drawnLines += 1
         let tasks = self.state.tasks.values.filter { $0.state == .started }.sorted()
         for task in tasks {
@@ -167,9 +171,10 @@ extension BlastProgressAnimation {
         }
     }
 
-    func _complete() {
+    func _complete(_ message: String?) {
         self._clear()
         self._drawStates()
+        self._drawMessage(message ?? self.header)
         self.terminal.newLine()
     }
 
