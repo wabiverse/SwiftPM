@@ -15,7 +15,9 @@ import Foundation
 extension FormatStyle where Self == Duration.UnitsFormatStyle {
     static var blast: Self {
         .units(
+            allowed: [.hours, .minutes, .seconds, .milliseconds],
             width: .narrow,
+            maximumUnitCount: 2,
             fractionalPart: .init(lengthLimits: 0...2))
     }
 }
