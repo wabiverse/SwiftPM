@@ -31,7 +31,7 @@ extension TerminalCapabilities {
 
 extension Environment {
   /// The interactivity enabled by the `"TERM"` environment variable.
-  internal var termInteractive: Bool? {
+  var termInteractive: Bool? {
     switch self["TERM"] {
     case "dumb": false
     default: nil

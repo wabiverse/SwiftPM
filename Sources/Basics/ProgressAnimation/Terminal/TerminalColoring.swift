@@ -73,7 +73,7 @@ extension Environment {
     /// - Returns: `nil` if the `"CLICOLOR"` environment variable is undefined,
     ///   `true` if the `"CLICOLOR"` is defined to a non `"0"` value, `false`
     ///   otherwise.
-    internal var cliColor: Bool? {
+    var cliColor: Bool? {
         self["CLICOLOR"].map { $0 != "0" }
     }
 
@@ -84,7 +84,7 @@ extension Environment {
     ///
     /// - Returns: `true` if the `"CLICOLOR_FORCE"` environment variable is
     ///   defined, `false` otherwise.
-    internal var cliColorForce: Bool {
+    var cliColorForce: Bool {
         self["CLICOLOR_FORCE"] != nil
     }
 
@@ -95,12 +95,12 @@ extension Environment {
     ///
     /// - Returns: `true` if the `"NO_COLOR"` environment variable is defined,
     ///   `false` otherwise.
-    internal var noColor: Bool {
+    var noColor: Bool {
         self["NO_COLOR"] != nil
     }
 
     /// The coloring enabled by the `"TERM"` environment variable.
-    internal var termColoring: TerminalColoring? {
+    var termColoring: TerminalColoring? {
         switch self["TERM"] {
         case "dumb": nil
         case "xterm": ._8
@@ -113,7 +113,7 @@ extension Environment {
     /// The coloring enabled by the
     /// [`"COLORTERM"`](https://github.com/termstandard/colors) environment
     /// variable.
-    internal var colorTerm: TerminalColoring? {
+    var colorTerm: TerminalColoring? {
         switch self["COLORTERM"] {
         case "truecolor", "24bit": ._16m
         default: nil
@@ -126,7 +126,7 @@ extension Environment {
     ///
     /// - Returns: `true` if the `"CI"` environment variable is defined, `false`
     ///   otherwise.
-    internal var runningInCI: Bool {
+    var runningInCI: Bool {
         self["CI"] != nil
     }
 
@@ -136,7 +136,7 @@ extension Environment {
     ///
     /// - Returns: `true` if the `"XPC_SERVICE_NAME"` environment variable
     ///   includes `"com.apple.dt.xcode"`, `false` otherwise.
-    internal var runningInXcode: Bool {
+    var runningInXcode: Bool {
         self["XPC_SERVICE_NAME"]?.contains("com.apple.dt.xcode") ?? false
     }
 }
