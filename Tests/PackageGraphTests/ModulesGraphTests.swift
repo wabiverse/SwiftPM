@@ -1574,7 +1574,7 @@ final class ModulesGraphTests: XCTestCase {
                     ],
                     targets: [
                         TargetDescription(name: "Foo", dependencies: [
-                            .target(name: "Bar", condition: PackageConditionDescription(
+                            .target(name: "Bar", linkingStrategy: .matchProduct, condition: PackageConditionDescription(
                                 platformNames: ["linux"],
                                 config: nil
                             )),

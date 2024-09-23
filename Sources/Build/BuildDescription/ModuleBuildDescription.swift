@@ -176,7 +176,7 @@ extension ModuleBuildDescription {
                 case .product(let product, _):
                     let productDescription = plan.description(for: product, context: self.destination)
                     return .product(product, productDescription)
-                case .module(let module, _):
+                case .module(let module, _, _):
                     let moduleDescription = plan.description(for: module, context: self.destination)
                     return .module(module, moduleDescription)
                 }

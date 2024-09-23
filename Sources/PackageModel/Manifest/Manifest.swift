@@ -232,7 +232,7 @@ public final class Manifest: Sendable {
             if let target = targetsByName[targetName] {
                 let dependencies: [String] = target.dependencies.compactMap { dependency in
                     switch dependency {
-                    case .target(let name, _),
+                    case .target(let name, _, _),
                          .byName(let name, _):
                         return targetsByName.keys.contains(name) ? name : nil
                     default:

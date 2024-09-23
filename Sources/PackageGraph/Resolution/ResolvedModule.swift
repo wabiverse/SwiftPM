@@ -21,15 +21,15 @@ public typealias ResolvedTarget = ResolvedModule
 public struct ResolvedModule {
     /// Represents dependency of a resolved module.
     public enum Dependency {
-        /// Direct dependency of the module. This module is in the same package and should be statically linked.
-        case module(_ module: ResolvedModule, conditions: [PackageCondition])
+        /// Direct dependency of the module. This module is in the same package and should defer to the linkingStrategy (ex. matchProduct, alwaysStatic).
+        case module(_ module: ResolvedModule, linkingStrategy: PackageLinkingStrategy?, conditions: [PackageCondition])
 
         /// The module depends on this product.
         case product(_ product: ResolvedProduct, conditions: [PackageCondition])
 
         public var module: ResolvedModule? {
             switch self {
-            case .module(let module, _): return module
+            case .module(let module, _, _): return module
             case .product: return nil
             }
         }
@@ -43,25 +43,32 @@ public struct ResolvedModule {
 
         public var conditions: [PackageCondition] {
             switch self {
-            case .module(_, let conditions): return conditions
+            case .module(_, _, let conditions): return conditions
             case .product(_, let conditions): return conditions
+            }
+        }
+
+        public var linkingStrategy: PackageLinkingStrategy? {
+            switch self {
+            case .module(_, let linkingStrategy, _): return linkingStrategy
+            case .product(_, _): return nil
             }
         }
 
         /// Returns the direct dependencies of the underlying dependency, across the package graph.
         public var dependencies: [ResolvedModule.Dependency] {
             switch self {
-            case .module(let module, _):
+            case .module(let module, _, _):
                 return module.dependencies
             case .product(let product, _):
-                return product.modules.map { .module($0, conditions: []) }
+                return product.modules.map { .module($0, linkingStrategy: nil, conditions: []) }
             }
         }
 
         /// Returns the direct dependencies of the underlying dependency, limited to the module's package.
         public var packageDependencies: [ResolvedModule.Dependency] {
             switch self {
-            case .module(let module, _):
+            case .module(let module, _, _):
                 return module.dependencies
             case .product:
                 return []
@@ -110,7 +117,7 @@ public struct ResolvedModule {
         var plugins = IdentifiableSet<ResolvedModule>()
         for dependency in self.dependencies(satisfying: environment) {
             switch dependency {
-            case .module(let module, _):
+            case .module(let module, _, _):
                 if let plugin = module.underlying as? PluginModule {
                     assert(plugin.capability == .buildTool)
                     plugins.insert(module)
@@ -173,7 +180,7 @@ public struct ResolvedModule {
             switch $0 {
             case .product(let productDependency, _):
                 productDependency.type == .macro
-            case .module(let moduleDependency, _):
+            case .module(let moduleDependency, _, _):
                 moduleDependency.type == .macro
             }
         })
@@ -217,7 +224,7 @@ extension ResolvedModule.Dependency: CustomStringConvertible {
         switch self {
         case .product(let p, _):
             str += p.description
-        case .module(let t, _):
+        case .module(let t, _, _):
             str += t.description
         }
         str += ">"
@@ -242,7 +249,7 @@ extension ResolvedModule.Dependency: Identifiable {
 
     public var id: ID {
         switch self {
-        case .module(let module, _):
+        case .module(let module, _, _):
             return .init(kind: .module, packageIdentity: module.packageIdentity, name: module.name)
         case .product(let product, _):
             return .init(kind: .product, packageIdentity: product.packageIdentity, name: product.name)
@@ -253,7 +260,7 @@ extension ResolvedModule.Dependency: Identifiable {
 extension ResolvedModule.Dependency: Equatable {
     public static func == (lhs: ResolvedModule.Dependency, rhs: ResolvedModule.Dependency) -> Bool {
         switch (lhs, rhs) {
-        case (.module(let lhsModule, _), .module(let rhsModule, _)):
+        case (.module(let lhsModule, _, _), .module(let rhsModule, _, _)):
             return lhsModule.id == rhsModule.id
         case (.product(let lhsProduct, _), .product(let rhsProduct, _)):
             return lhsProduct.id == rhsProduct.id
@@ -266,7 +273,7 @@ extension ResolvedModule.Dependency: Equatable {
 extension ResolvedModule.Dependency: Hashable {
     public func hash(into hasher: inout Hasher) {
         switch self {
-        case .module(let module, _):
+        case .module(let module, _, _):
             hasher.combine(module.id)
         case .product(let product, _):
             hasher.combine(product.id)

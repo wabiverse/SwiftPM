@@ -212,8 +212,8 @@ extension Serialization.TargetDependency.Condition {
 extension Serialization.TargetDependency {
     init(_ dependency: PackageDescription.Target.Dependency) {
         switch dependency {
-        case .targetItem(let name, let condition):
-            self = .target(name: name, condition: condition.map { .init($0) })
+        case .targetItem(let name, let linkingStrategy, let condition):
+            self = .target(name: name, linkingStrategy: linkingStrategy.flatMap { .init(rawValue: $0.rawValue) }, condition: condition.map { .init($0) })
         case .productItem(let name, let package, let moduleAliases, let condition):
             self = .product(
                 name: name,

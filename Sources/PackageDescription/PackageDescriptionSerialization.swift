@@ -167,7 +167,12 @@ enum Serialization {
             let traits: Set<String>?
         }
 
-        case target(name: String, condition: Condition?)
+        enum LinkingStrategy: String, Codable {
+            case matchProduct
+            case alwaysStatic
+        }
+
+        case target(name: String, linkingStrategy: LinkingStrategy?, condition: Condition?)
         case product(name: String, package: String?, moduleAliases: [String: String]?, condition: Condition?)
         case byName(name: String, condition: Condition?)
     }

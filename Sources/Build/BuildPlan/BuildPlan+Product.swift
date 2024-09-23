@@ -128,7 +128,7 @@ extension BuildPlan {
                 switch $0 {
                 case .product:
                     nil
-                case .module(let target, _):
+                case .module(let target, _, _):
                     target
                 }
             }
@@ -193,7 +193,7 @@ extension BuildPlan {
                         switch $0 {
                         case .product(let product, _):
                             .init(product: product, context: destination)
-                        case .module(let module, _):
+                        case .module(let module, _, _):
                             .init(module: module, context: destination)
                         }
                     }

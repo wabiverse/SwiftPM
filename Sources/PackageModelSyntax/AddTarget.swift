@@ -310,7 +310,7 @@ fileprivate extension TargetDescription.Dependency {
     /// Retrieve the name of the dependency
     var name: String {
         switch self {
-        case .target(name: let name, condition: _),
+        case .target(name: let name, linkingStrategy: _, condition: _),
             .byName(name: let name, condition: _),
             .product(name: let name, package: _, moduleAliases: _, condition: _):
             name

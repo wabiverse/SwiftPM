@@ -73,7 +73,7 @@ public class Module {
     /// A module dependency to a module or product.
     public enum Dependency {
         /// A dependency referencing another target, with conditions.
-        case module(_ target: Module, conditions: [PackageCondition])
+        case module(_ target: Module, linkingStrategy: PackageLinkingStrategy?, conditions: [PackageCondition])
 
         /// A dependency referencing a product, with conditions.
         case product(_ product: ProductReference, conditions: [PackageCondition])
@@ -84,7 +84,7 @@ public class Module {
 
         /// The module if the dependency is a target dependency.
         public var module: Module? {
-            if case .module(let target, _) = self {
+            if case .module(let target, _, _) = self {
                 return target
             } else {
                 return nil
@@ -103,17 +103,27 @@ public class Module {
         /// The dependency conditions.
         public var conditions: [PackageCondition] {
             switch self {
-            case .module(_, let conditions):
+            case .module(_, _, let conditions):
                 return conditions
             case .product(_, let conditions):
                 return conditions
             }
         }
 
+        /// The dependency linking strategy.
+        public var linkingStrategy: PackageLinkingStrategy? {
+            switch self {
+            case .module(_, let linkingStrategy, _):
+                return linkingStrategy
+            case .product(_, _):
+                return nil
+            }
+        }
+
         /// The name of the target or product of the dependency.
         public var name: String {
             switch self {
-            case .module(let target, _):
+            case .module(let target, _, _):
                 return target.name
             case .product(let product, _):
                 return product.name

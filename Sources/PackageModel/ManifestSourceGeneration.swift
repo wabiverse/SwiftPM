@@ -328,8 +328,11 @@ fileprivate extension SourceCodeFragment {
         var params: [SourceCodeFragment] = []
 
         switch dependency {
-        case .target(name: let name, condition: let condition):
+        case .target(name: let name, linkingStrategy: let linkingStrategy, condition: let condition):
             params.append(SourceCodeFragment(key: "name", string: name))
+            if let linkingStrategy {
+                params.append(SourceCodeFragment(key: "linkingStrategy", subnode: SourceCodeFragment(enum: linkingStrategy.rawValue)))
+            }
             if let condition {
                 params.append(SourceCodeFragment(key: "condition", subnode: SourceCodeFragment(from: condition)))
             }

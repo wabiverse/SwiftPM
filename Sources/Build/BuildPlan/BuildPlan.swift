@@ -417,7 +417,7 @@ public class BuildPlan: SPMBuildCore.BuildPlan {
                 case is PluginModule:
                     try module.dependencies.compactMap {
                         switch $0 {
-                        case .module(let moduleDependency, _):
+                        case .module(let moduleDependency, _, _):
                             if moduleDependency.type == .executable {
                                 return graph.product(for: moduleDependency.name)
                             }
@@ -1038,7 +1038,7 @@ extension BuildPlan {
                 switch dependency {
                 case .product(let product, conditions: _):
                     partial.append(.init(product: product, context: destination))
-                case .module(let module, _):
+                case .module(let module, _, _):
                     partial.append(.init(module: module, context: destination))
                 }
             }
@@ -1107,7 +1107,7 @@ extension BuildPlan {
                     for module in product.modules {
                         partial.append(.init(module: module, context: parent.destination))
                     }
-                case .module(let module, _):
+                case .module(let module, _, _):
                     partial.append(.init(module: module, context: destination))
                 }
             }
@@ -1167,7 +1167,7 @@ extension BuildPlan {
                     switch dependency {
                     case .product(let product, _):
                         partial.append(.init(product: product, context: destination))
-                    case .module(let module, _):
+                    case .module(let module, _, _):
                         partial.append(.init(module: module, context: destination))
                     }
                 }.filter {

@@ -534,12 +534,12 @@ private func createResolvedPackages(
         for moduleBuilder in moduleBuilders {
             moduleBuilder.dependencies += try moduleBuilder.module.dependencies.compactMap { dependency in
                 switch dependency {
-                case .module(let moduleDependency, let conditions):
+                case .module(let moduleDependency, let linkingStrategy, let conditions):
                     try moduleBuilder.module.validateDependency(module: moduleDependency)
                     guard let moduleBuilder = modulesMap[moduleDependency] else {
                         throw InternalError("unknown target \(moduleDependency.name)")
                     }
-                    return .module(moduleBuilder, conditions: conditions)
+                    return .module(moduleBuilder, linkingStrategy: linkingStrategy, conditions: conditions)
                 case .product:
                     return nil
                 }
@@ -654,7 +654,7 @@ private func createResolvedPackages(
         // Establish dependencies in each module.
         for moduleBuilder in packageBuilder.modules {
             // Directly add all the system module dependencies.
-            moduleBuilder.dependencies += implicitSystemLibraryDeps.map { .module($0, conditions: []) }
+            moduleBuilder.dependencies += implicitSystemLibraryDeps.map { .module($0, linkingStrategy: nil, conditions: []) }
 
             // Establish product dependencies.
             for case .product(let productRef, let conditions) in moduleBuilder.module.dependencies {
@@ -1117,7 +1117,7 @@ private final class ResolvedModuleBuilder: ResolvedBuilder<ResolvedModule> {
     enum Dependency {
 
         /// Dependency to another module, with conditions.
-        case module(_ module: ResolvedModuleBuilder, conditions: [PackageCondition])
+        case module(_ module: ResolvedModuleBuilder, linkingStrategy: PackageLinkingStrategy?, conditions: [PackageCondition])
 
         /// Dependency to a product, with conditions.
         case product(_ product: ResolvedProductBuilder, conditions: [PackageCondition])
@@ -1162,8 +1162,8 @@ private final class ResolvedModuleBuilder: ResolvedBuilder<ResolvedModule> {
 
         let dependencies = try self.dependencies.map { dependency -> ResolvedModule.Dependency in
             switch dependency {
-            case .module(let moduleBuilder, let conditions):
-                return .module(try moduleBuilder.construct(), conditions: conditions)
+            case .module(let moduleBuilder, let linkingStrategy, let conditions):
+                return .module(try moduleBuilder.construct(), linkingStrategy: linkingStrategy, conditions: conditions)
             case .product(let productBuilder, let conditions):
                 try self.module.validateDependency(
                     product: productBuilder.product,

@@ -2690,8 +2690,8 @@ final class PIFBuilderTests: XCTestCase {
                     toolsVersion: .v5_3,
                     targets: [
                         .init(name: "foo", dependencies: [
-                            .target(name: "FooLib1", condition: .init(platformNames: ["macos"])),
-                            .target(name: "FooLib2", condition: .init(platformNames: ["ios"])),
+                            .target(name: "FooLib1", linkingStrategy: .matchProduct, condition: .init(platformNames: ["macos"])),
+                            .target(name: "FooLib2", linkingStrategy: .matchProduct, condition: .init(platformNames: ["ios"])),
                         ]),
                         .init(name: "FooLib1"),
                         .init(name: "FooLib2"),

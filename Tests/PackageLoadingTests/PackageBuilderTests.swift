@@ -2829,7 +2829,7 @@ final class PackageBuilderTests: XCTestCase {
                 try TargetDescription(
                     name: "Foo",
                     dependencies: [
-                        .target(name: "Bar", condition: PackageConditionDescription(
+                        .target(name: "Bar", linkingStrategy: .matchProduct, condition: PackageConditionDescription(
                             platformNames: ["macos"],
                             config: nil
                         )),

@@ -974,7 +974,7 @@ final class BuildPlanTests: XCTestCase {
                     ],
                     targets: [
                         TargetDescription(name: "exe", dependencies: [
-                            .target(name: "PkgLib", condition: PackageConditionDescription(
+                            .target(name: "PkgLib", linkingStrategy: .matchProduct, condition: PackageConditionDescription(
                                 platformNames: ["linux", "android"],
                                 config: nil
                             )),
@@ -1537,7 +1537,7 @@ final class BuildPlanTests: XCTestCase {
                     ],
                     targets: [
                         TargetDescription(name: "exe", dependencies: [
-                            .target(name: "PkgLib", condition: PackageConditionDescription(
+                            .target(name: "PkgLib", linkingStrategy: .matchProduct, condition: PackageConditionDescription(
                                 platformNames: ["linux", "android"],
                                 config: nil
                             )),
@@ -3502,7 +3502,7 @@ final class BuildPlanTests: XCTestCase {
                     targets: [
                         TargetDescription(name: "BTarget1", dependencies: []),
                         TargetDescription(name: "BTarget2", dependencies: [
-                            .target(name: "BTarget3", condition: PackageConditionDescription(
+                            .target(name: "BTarget3", linkingStrategy: .matchProduct, condition: PackageConditionDescription(
                                 platformNames: ["macos"],
                                 config: nil
                             )),

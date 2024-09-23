@@ -83,7 +83,7 @@ extension TargetDescription.Dependency: ManifestSyntaxRepresentable {
         case .byName(name: let name, condition: nil):
             "\(literal: name)"
 
-        case .target(name: let name, condition: nil):
+        case .target(name: let name, linkingStrategy: nil, condition: nil):
             ".target(name: \(literal: name))"
 
         case .product(name: let name, package: nil, moduleAliases: nil, condition: nil):

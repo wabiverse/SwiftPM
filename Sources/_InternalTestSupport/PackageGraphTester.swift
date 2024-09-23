@@ -256,7 +256,7 @@ public final class ResolvedTargetDependencyResult {
         line: UInt = #line,
         body: (ResolvedTargetResult) -> Void
     ) {
-        guard case let .module(target, _) = self.dependency else {
+        guard case let .module(target, _, _) = self.dependency else {
             return XCTFail("Dependency \(dependency) is not a target", file: file, line: line)
         }
         body(ResolvedTargetResult(target))
@@ -324,7 +324,7 @@ public final class ResolvedProductResult {
 extension ResolvedModule.Dependency {
     public var name: String {
         switch self {
-        case .module(let target, _):
+        case .module(let target, _, _):
             return target.name
         case .product(let product, _):
             return product.name

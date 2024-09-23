@@ -47,8 +47,9 @@ public final class Target {
         ///
         ///  - Parameters:
         ///    - name: The name of the target.
+        ///    - linkingStrategy: The linking strategy to use for linking to this target dependency. For example, match the product linking type or always static.
         ///    - condition: A condition that limits the application of the target dependency. For example, only apply a dependency for a specific platform.
-        case targetItem(name: String, condition: TargetDependencyCondition?)
+        case targetItem(name: String, linkingStrategy: TargetDependencyLinkingStrategy?, condition: TargetDependencyCondition?)
         /// A dependency on a product.
         ///
         /// - Parameters:
@@ -1249,7 +1250,7 @@ extension Target.Dependency {
     /// - Returns: A `Target.Dependency` instance.
     @available(_PackageDescription, obsoleted: 5.3)
     public static func target(name: String) -> Target.Dependency {
-        return .targetItem(name: name, condition: nil)
+        return .targetItem(name: name, linkingStrategy: nil, condition: nil)
     }
 
     /// Creates a dependency on a product from a package dependency.
@@ -1295,9 +1296,29 @@ extension Target.Dependency {
     ///     dependency. For example, only apply a dependency for a specific
     ///     platform.
     /// - Returns: A `Target.Dependency` instance.
-@available(_PackageDescription, introduced: 5.3)
+@available(_PackageDescription, introduced: 5.3, obsoleted: 6.0)
     public static func target(name: String, condition: TargetDependencyCondition? = nil) -> Target.Dependency {
-        return .targetItem(name: name, condition: condition)
+        return .targetItem(name: name, linkingStrategy: nil, condition: condition)
+    }
+
+    /// Creates a dependency on a target in the same package.
+    ///
+    /// - Parameters:
+    ///   - name: The name of the target.
+    ///   - linkingStrategy: The linking strategy to use for linking to this
+    ///     target dependency. For example, match the product linking type or
+    ///     always static.
+    ///   - condition: A condition that limits the application of the target
+    ///     dependency. For example, only apply a dependency for a specific
+    ///     platform.
+    /// - Returns: A `Target.Dependency` instance.
+@available(_PackageDescription, introduced: 6.0)
+    public static func target(
+        name: String, 
+        linkingStrategy: TargetDependencyLinkingStrategy? = nil, 
+        condition: TargetDependencyCondition? = nil
+    ) -> Target.Dependency {
+        return .targetItem(name: name, linkingStrategy: linkingStrategy,  condition: condition)
     }
 
     /// Creates a target dependency on a product from a package dependency.
@@ -1354,6 +1375,14 @@ extension Target.Dependency {
     public static func byName(name: String, condition: TargetDependencyCondition? = nil) -> Target.Dependency {
         return .byNameItem(name: name, condition: condition)
     }
+}
+
+/// A linking strategy to use to determine how to link to the target's dependency.
+public enum TargetDependencyLinkingStrategy: String {
+  /// Link to this target dependency matching the product's link type, which defaults to auto.
+  case matchProduct
+  /// Link to this target dependency using static linking, regardless of the product's link type.
+  case alwaysStatic
 }
 
 /// A condition that limits the application of a target's dependency.

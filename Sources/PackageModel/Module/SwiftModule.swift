@@ -95,7 +95,7 @@ public final class SwiftModule: Module {
         // for linux main target. This will need to change if we move to a model
         // where we allow per target swift language version build settings.
         let swiftTestTarget = dependencies.first {
-            guard case .module(let target as SwiftModule, _) = $0 else { return false }
+            guard case .module(let target as SwiftModule, _, _) = $0 else { return false }
             return target.type == .test
         }.flatMap { $0.module as? SwiftModule }
 

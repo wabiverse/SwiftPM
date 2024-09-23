@@ -442,7 +442,7 @@ class ManifestEditTests: XCTestCase {
                                   dependencies: [
                                     .byName(name: "OtherLib", condition: nil),
                                     .product(name: "SwiftSyntax", package: "swift-syntax"),
-                                    .target(name: "TargetLib", condition: nil)
+                                    .target(name: "TargetLib", linkingStrategy: nil, condition: nil)
                                   ]),
                 to: manifest
             )
@@ -497,7 +497,7 @@ class ManifestEditTests: XCTestCase {
                     name: "MyProgram target-name",
                     dependencies: [
                         .product(name: "SwiftSyntax", package: "swift-syntax"),
-                        .target(name: "TargetLib", condition: nil),
+                        .target(name: "TargetLib", linkingStrategy: nil, condition: nil),
                         .byName(name: "MyLib", condition: nil)
                     ],
                     type: .executable

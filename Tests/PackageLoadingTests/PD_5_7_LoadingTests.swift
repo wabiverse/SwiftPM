@@ -73,8 +73,8 @@ final class PackageDescription5_7LoadingTests: PackageDescriptionLoadingTests {
                 dependencies: [],
                 targets: [
                     .target(name: "Foo", dependencies: [
-                        .target(name: "Bar", condition: .when(platforms: [])),
-                        .target(name: "Baz", condition: .when(platforms: [.linux])),
+                        .target(name: "Bar", linkingStrategy: .matchProduct, condition: .when(platforms: [])),
+                        .target(name: "Baz", linkingStrategy: .matchProduct, condition: .when(platforms: [.linux])),
                     ]),
                     .target(name: "Bar"),
                     .target(name: "Baz"),
@@ -88,8 +88,8 @@ final class PackageDescription5_7LoadingTests: PackageDescriptionLoadingTests {
         XCTAssertNoDiagnostics(validationDiagnostics)
 
         let dependencies = manifest.targets[0].dependencies
-        XCTAssertEqual(dependencies[0], .target(name: "Bar", condition: .none))
-        XCTAssertEqual(dependencies[1], .target(name: "Baz", condition: .init(platformNames: ["linux"], config: .none)))
+        XCTAssertEqual(dependencies[0], .target(name: "Bar", linkingStrategy: .matchProduct, condition: .none))
+        XCTAssertEqual(dependencies[1], .target(name: "Baz", linkingStrategy: .matchProduct, condition: .init(platformNames: ["linux"], config: .none)))
     }
 
     func testConditionalTargetDependenciesDeprecation() async throws {
@@ -100,7 +100,7 @@ final class PackageDescription5_7LoadingTests: PackageDescriptionLoadingTests {
                 dependencies: [],
                 targets: [
                     .target(name: "Foo", dependencies: [
-                        .target(name: "Bar", condition: .when(platforms: nil))
+                        .target(name: "Bar", linkingStrategy: .matchProduct, condition: .when(platforms: nil))
                     ]),
                     .target(name: "Bar")
                 ]

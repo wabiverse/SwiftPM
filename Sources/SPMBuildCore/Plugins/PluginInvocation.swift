@@ -606,7 +606,7 @@ fileprivate func collectAccessibleTools(
         let builtToolName: String
         let executableOrBinaryModule: Module
         switch dependency {
-        case .module(let module, _):
+        case .module(let module, _, _):
             builtToolName = module.name
             executableOrBinaryModule = module.underlying
         case .product(let product, _):

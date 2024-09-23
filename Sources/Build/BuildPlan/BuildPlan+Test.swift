@@ -88,14 +88,14 @@ extension BuildPlan {
 
                 let discoveryTarget = SwiftModule(
                     name: discoveryTargetName,
-                    dependencies: testProduct.underlying.modules.map { .module($0, conditions: []) },
+                    dependencies: testProduct.underlying.modules.map { .module($0, linkingStrategy: nil, conditions: []) },
                     packageAccess: true, // test target is allowed access to package decls by default
                     testDiscoverySrc: Sources(paths: discoveryPaths, root: discoveryDerivedDir)
                 )
                 let discoveryResolvedModule = ResolvedModule(
                     packageIdentity: testProduct.packageIdentity,
                     underlying: discoveryTarget,
-                    dependencies: testProduct.modules.map { .module($0, conditions: []) },
+                    dependencies: testProduct.modules.map { .module($0, linkingStrategy: nil, conditions: []) },
                     defaultLocalization: testProduct.defaultLocalization,
                     supportedPlatforms: testProduct.supportedPlatforms,
                     platformVersionProvider: testProduct.platformVersionProvider
@@ -130,14 +130,14 @@ extension BuildPlan {
                 let entryPointTarget = SwiftModule(
                     name: testProduct.name,
                     type: .library,
-                    dependencies: testProduct.underlying.modules.map { .module($0, conditions: []) } + swiftTargetDependencies,
+                    dependencies: testProduct.underlying.modules.map { .module($0, linkingStrategy: nil, conditions: []) } + swiftTargetDependencies,
                     packageAccess: true, // test target is allowed access to package decls
                     testEntryPointSources: entryPointSources
                 )
                 let entryPointResolvedTarget = ResolvedModule(
                     packageIdentity: testProduct.packageIdentity,
                     underlying: entryPointTarget,
-                    dependencies: testProduct.modules.map { .module($0, conditions: []) } + resolvedTargetDependencies,
+                    dependencies: testProduct.modules.map { .module($0, linkingStrategy: nil, conditions: []) } + resolvedTargetDependencies,
                     defaultLocalization: testProduct.defaultLocalization,
                     supportedPlatforms: testProduct.supportedPlatforms,
                     platformVersionProvider: testProduct.platformVersionProvider
@@ -166,8 +166,8 @@ extension BuildPlan {
                 resolvedTargetDependencies = []
             } else {
                 discoveryTargets = try generateDiscoveryTargets()
-                swiftTargetDependencies = [.module(discoveryTargets!.target, conditions: [])]
-                resolvedTargetDependencies = [.module(discoveryTargets!.resolved, conditions: [])]
+                swiftTargetDependencies = [.module(discoveryTargets!.target, linkingStrategy: nil, conditions: [])]
+                resolvedTargetDependencies = [.module(discoveryTargets!.resolved, linkingStrategy: nil, conditions: [])]
             }
 
             if !destinationBuildParameters.triple.isDarwin(), let entryPointResolvedTarget = testProduct.testEntryPointModule {

@@ -28,13 +28,13 @@ public struct TargetDescription: Hashable, Encodable, Sendable {
 
     /// Represents a target's dependency on another entity.
     public enum Dependency: Hashable, Sendable {
-        case target(name: String, condition: PackageConditionDescription?)
+        case target(name: String, linkingStrategy: PackageLinkingStrategy?, condition: PackageConditionDescription?)
         case product(name: String, package: String?, moduleAliases: [String: String]? = nil, condition: PackageConditionDescription?)
         case byName(name: String, condition: PackageConditionDescription?)
 
         var condition: PackageConditionDescription? {
             switch self {
-            case .target(_, let condition):
+            case .target(_, _, let condition):
                 return condition
             case .product(_, _, _, let condition):
                 return condition
@@ -43,8 +43,19 @@ public struct TargetDescription: Hashable, Encodable, Sendable {
             }
         }
 
+        var linkingStrategy: PackageLinkingStrategy? {
+            switch self {
+            case .target(_, let linkingStrategy, _):
+                return linkingStrategy
+            case .product(_, _, _, _):
+                return nil
+            case .byName(_, _):
+                return nil
+            }
+        }
+
         public static func target(name: String) -> Dependency {
-            return .target(name: name, condition: nil)
+            return .target(name: name, linkingStrategy: nil, condition: nil)
         }
 
         public static func product(name: String, package: String? = nil, moduleAliases: [String: String]? = nil) -> Dependency {
@@ -265,10 +276,11 @@ extension TargetDescription.Dependency: Codable {
     public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         switch self {
-        case let .target(a1, a2):
+        case let .target(a1, a2, a3):
             var unkeyedContainer = container.nestedUnkeyedContainer(forKey: .target)
             try unkeyedContainer.encode(a1)
             try unkeyedContainer.encode(a2)
+            try unkeyedContainer.encode(a3)
         case let .product(a1, a2, a3, a4):
             var unkeyedContainer = container.nestedUnkeyedContainer(forKey: .product)
             try unkeyedContainer.encode(a1)
@@ -291,8 +303,9 @@ extension TargetDescription.Dependency: Codable {
         case .target:
             var unkeyedValues = try values.nestedUnkeyedContainer(forKey: key)
             let a1 = try unkeyedValues.decode(String.self)
-            let a2 = try unkeyedValues.decodeIfPresent(PackageConditionDescription.self)
-            self = .target(name: a1, condition: a2)
+            let a2 = try unkeyedValues.decodeIfPresent(PackageLinkingStrategy.self)
+            let a3 = try unkeyedValues.decodeIfPresent(PackageConditionDescription.self)
+            self = .target(name: a1, linkingStrategy: a2, condition: a3)
         case .product:
             var unkeyedValues = try values.nestedUnkeyedContainer(forKey: key)
             let a1 = try unkeyedValues.decode(String.self)

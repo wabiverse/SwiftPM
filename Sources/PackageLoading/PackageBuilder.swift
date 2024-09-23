@@ -638,7 +638,7 @@ public final class PackageBuilder {
             let productTargets = Set(manifest.products.flatMap(\.targets))
             let snippetDependencies = targets
                 .filter { $0.type == .library && productTargets.contains($0.name) }
-                .map { Module.Dependency.module($0, conditions: []) }
+                .map { Module.Dependency.module($0, linkingStrategy: nil, conditions: []) }
             snippetTargets = try createSnippetModules(dependencies: snippetDependencies)
         } else {
             snippetTargets = []
@@ -681,7 +681,7 @@ public final class PackageBuilder {
             // Collect the successors from declared dependencies.
             var successors: [PotentialModule] = target.dependencies.compactMap {
                 switch $0 {
-                case .target(let name, _):
+                case .target(let name, _, _):
                     // Since we already checked above that all referenced targets
                     // has to present, we always expect this target to be present in
                     // potentialModules dictionary.
@@ -738,11 +738,11 @@ public final class PackageBuilder {
             let dependencies: [Module.Dependency] = try manifestTarget.map {
                 try $0.dependencies.compactMap { dependency -> Module.Dependency? in
                     switch dependency {
-                    case .target(let name, let condition):
+                    case .target(let name, let linkingStrategy, let condition):
                         // We don't create an object for targets which have no sources.
                         if emptyModules.contains(name) { return nil }
                         guard let target = targets[name] else { return nil }
-                        return .module(target, conditions: buildConditions(from: condition))
+                        return .module(target, linkingStrategy: linkingStrategy.flatMap { .init(rawValue: $0.rawValue) }, conditions: buildConditions(from: condition))
 
                     case .product(let name, let package, let moduleAliases, let condition):
                         try validateModuleAliases(moduleAliases)
@@ -754,7 +754,7 @@ public final class PackageBuilder {
                         // We don't create an object for targets which have no sources.
                         if emptyModules.contains(name) { return nil }
                         if let target = targets[name] {
-                            return .module(target, conditions: buildConditions(from: condition))
+                            return .module(target, linkingStrategy: nil, conditions: buildConditions(from: condition))
                         } else if potentialModuleMap[name] == nil {
                             return .product(
                                 .init(name: name, package: nil),
@@ -776,9 +776,9 @@ public final class PackageBuilder {
                             return .product(Module.ProductReference(name: name, package: package), conditions: [])
                         } else {
                             if let target = targets[name] {
-                                return .module(target, conditions: [])
+                                return .module(target, linkingStrategy: nil, conditions: [])
                             } else if let targetName = pluginTargetName(for: name), let target = targets[targetName] {
-                                return .module(target, conditions: [])
+                                return .module(target, linkingStrategy: nil, conditions: [])
                             } else {
                                 self.observabilityScope.emit(.pluginNotFound(name: name))
                                 return nil
@@ -1667,7 +1667,7 @@ extension Manifest {
         let names = targetsRequired(for: productFilter).flatMap { target in
             [target.name] + target.dependencies.compactMap {
                 switch $0 {
-                case .target(let name, _):
+                case .target(let name, _, _):
                     name
                 case .byName, .product:
                     nil

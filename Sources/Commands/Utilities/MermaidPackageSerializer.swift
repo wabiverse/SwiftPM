@@ -115,7 +115,7 @@ extension MermaidPackageSerializer.Node {
                 border: .hexagon,
                 subgraph: product.package
             )
-        case let .module(target, _):
+        case let .module(target, _, _):
             self.init(target: target)
         }
     }

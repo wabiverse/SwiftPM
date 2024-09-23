@@ -333,8 +333,8 @@ extension ProductType.LibraryType {
 extension TargetDescription.Dependency {
     init(_ dependency: Serialization.TargetDependency, identityResolver: IdentityResolver) throws {
         switch dependency {
-        case .target(let name, let condition):
-            self = .target(name: name, condition: condition.map { .init($0) })
+        case .target(let name, let linkingStrategy, let condition):
+            self = .target(name: name, linkingStrategy: linkingStrategy.flatMap { .init(rawValue: $0.rawValue) }, condition: condition.map { .init($0) })
         case .product(let name, let package, let moduleAliases, let condition):
             var package: String? = package
             if let packageName = package {

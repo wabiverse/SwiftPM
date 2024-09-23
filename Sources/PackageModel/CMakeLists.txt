@@ -19,6 +19,7 @@ add_library(PackageModel
   Manifest/Manifest.swift
   Manifest/PackageConditionDescription.swift
   Manifest/PackageDependencyDescription.swift
+  Manifest/PackageLinkingStrategy.swift
   Manifest/PlatformDescription.swift
   Manifest/ProductDescription.swift
   Manifest/SystemPackageProviderDescription.swift

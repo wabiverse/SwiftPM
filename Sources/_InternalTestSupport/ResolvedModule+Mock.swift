@@ -18,6 +18,7 @@ extension ResolvedModule {
         packageIdentity: PackageIdentity,
         name: String,
         deps: ResolvedModule...,
+        linkingStrategy: PackageLinkingStrategy? = nil,
         conditions: [PackageCondition] = []
     ) -> ResolvedModule {
         ResolvedModule(
@@ -31,7 +32,7 @@ extension ResolvedModule {
                 packageAccess: false,
                 usesUnsafeFlags: false
             ),
-            dependencies: deps.map { .module($0, conditions: conditions) },
+            dependencies: deps.map { .module($0, linkingStrategy: linkingStrategy, conditions: conditions) },
             defaultLocalization: nil,
             supportedPlatforms: [],
             platformVersionProvider: .init(implementation: .minimumDeploymentTargetDefault)

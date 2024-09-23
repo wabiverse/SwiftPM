@@ -386,7 +386,7 @@ final class PackageDescription5_2LoadingTests: PackageDescriptionLoadingTests {
                 targets: [
                     .target(name: "Foo", dependencies: [
                         .target(name: "Biz"),
-                        .target(name: "Bar", condition: .when(platforms: [.linux])),
+                        .target(name: "Bar", linkingStrategy: .matchProduct, condition: .when(platforms: [.linux])),
                     ]),
                     .target(name: "Bar"),
                 ]

@@ -68,7 +68,7 @@ extension SwiftPackageCommand {
             if let package {
                 dependency = .product(name: dependencyName, package: package)
             } else {
-                dependency = .target(name: dependencyName, condition: nil)
+                dependency = .target(name: dependencyName, linkingStrategy: nil, condition: nil)
             }
 
             let editResult = try PackageModelSyntax.AddTargetDependency.addTargetDependency(

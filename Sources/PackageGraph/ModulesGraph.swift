@@ -128,7 +128,7 @@ public struct ModulesGraph {
                 dep: ResolvedModule.Dependency
             ) -> ResolvedModule? in
                 switch dep {
-                case .module(let moduleDependency, _):
+                case .module(let moduleDependency, _, _):
                     return moduleDependency
                 default:
                     return nil
@@ -261,7 +261,7 @@ public struct ModulesGraph {
         for module in rootModules where module.type == .executable {
             // Find all dependencies of this module within its package. Note that we do not traverse plugin usages.
             let dependencies = try topologicalSort(module.dependencies, successors: {
-                $0.dependencies.compactMap{ $0.module }.filter{ $0.type != .plugin }.map{ .module($0, conditions: []) }
+                $0.dependencies.compactMap{ $0.module }.filter{ $0.type != .plugin }.map{ .module($0, linkingStrategy: nil, conditions: []) }
             }).compactMap({ $0.module })
 
             // Include the test modules whose dependencies intersect with the

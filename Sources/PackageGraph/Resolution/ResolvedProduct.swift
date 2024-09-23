@@ -104,7 +104,7 @@ public struct ResolvedProduct {
 
         self.testEntryPointModule = product.testEntryPointPath.map { testEntryPointPath in
             // Create an executable resolved module with the entry point file, adding product's modules as dependencies.
-            let dependencies: [Module.Dependency] = product.modules.map { .module($0, conditions: []) }
+            let dependencies: [Module.Dependency] = product.modules.map { .module($0, linkingStrategy: nil, conditions: []) }
             let swiftModule = SwiftModule(
                 name: product.name,
                 dependencies: dependencies,
@@ -114,7 +114,7 @@ public struct ResolvedProduct {
             return ResolvedModule(
                 packageIdentity: packageIdentity,
                 underlying: swiftModule,
-                dependencies: modules.map { .module($0, conditions: []) },
+                dependencies: modules.map { .module($0, linkingStrategy: nil, conditions: []) },
                 defaultLocalization: defaultLocalization ?? .none, // safe since this is a derived product
                 supportedPlatforms: platforms,
                 platformVersionProvider: platformVersionProvider

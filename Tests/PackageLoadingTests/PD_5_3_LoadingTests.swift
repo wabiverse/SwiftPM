@@ -430,7 +430,7 @@ final class PackageDescription5_3LoadingTests: PackageDescriptionLoadingTests {
                 targets: [
                     .target(name: "Foo", dependencies: [
                         .target(name: "Biz"),
-                        .target(name: "Bar", condition: .when(platforms: [.linux])),
+                        .target(name: "Bar", linkingStrategy: .matchProduct, condition: .when(platforms: [.linux])),
                         .product(name: "Baz", package: "Baz", condition: .when(platforms: [.macOS])),
                         .byName(name: "Bar", condition: .when(platforms: [.watchOS, .iOS])),
                     ]),
@@ -447,7 +447,7 @@ final class PackageDescription5_3LoadingTests: PackageDescriptionLoadingTests {
 
         let dependencies = manifest.targets[0].dependencies
         XCTAssertEqual(dependencies[0], .target(name: "Biz"))
-        XCTAssertEqual(dependencies[1], .target(name: "Bar", condition: .init(platformNames: ["linux"], config: nil)))
+        XCTAssertEqual(dependencies[1], .target(name: "Bar", linkingStrategy: .matchProduct, condition: .init(platformNames: ["linux"], config: nil)))
         XCTAssertEqual(dependencies[2], .product(name: "Baz", package: "Baz", condition: .init(platformNames: ["macos"])))
         XCTAssertEqual(dependencies[3], .byName(name: "Bar", condition: .init(platformNames: ["watchos", "ios"])))
     }

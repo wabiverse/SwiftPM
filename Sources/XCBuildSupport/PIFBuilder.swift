@@ -560,12 +560,12 @@ final class PackagePIFProjectBuilder: PIFProjectBuilder {
         let dependencies = product.recursivePackageDependencies()
         for dependency in dependencies {
             switch dependency {
-            case .module(let target, let conditions):
+            case .module(let target, let linkingStrategy, let conditions):
                 if target.type != .systemModule {
-                    self.addDependency(to: target, in: pifTarget, conditions: conditions, linkProduct: true)
+                    self.addDependency(to: target, in: pifTarget, linkingStrategy: linkingStrategy, conditions: conditions, linkProduct: true)
                 }
             case .product(let product, let conditions):
-                self.addDependency(to: product, in: pifTarget, conditions: conditions, linkProduct: true)
+                self.addDependency(to: product, in: pifTarget, linkingStrategy: nil, conditions: conditions, linkProduct: true)
             }
         }
 
@@ -825,10 +825,11 @@ final class PackagePIFProjectBuilder: PIFProjectBuilder {
         linkProduct: Bool
     ) {
         switch dependency {
-        case .module(let target, let conditions):
+        case .module(let target, let linkingStrategy, let conditions):
             self.addDependency(
                 to: target,
                 in: pifTarget,
+                linkingStrategy: linkingStrategy,
                 conditions: conditions,
                 linkProduct: linkProduct
             )
@@ -836,6 +837,7 @@ final class PackagePIFProjectBuilder: PIFProjectBuilder {
             self.addDependency(
                 to: product,
                 in: pifTarget,
+                linkingStrategy: nil,
                 conditions: conditions,
                 linkProduct: linkProduct
             )
@@ -845,6 +847,7 @@ final class PackagePIFProjectBuilder: PIFProjectBuilder {
     private func addDependency(
         to target: ResolvedModule,
         in pifTarget: PIFTargetBuilder,
+        linkingStrategy: PackageLinkingStrategy?,
         conditions: [PackageCondition],
         linkProduct: Bool
     ) {
@@ -868,6 +871,7 @@ final class PackagePIFProjectBuilder: PIFProjectBuilder {
     private func addDependency(
         to product: ResolvedProduct,
         in pifTarget: PIFTargetBuilder,
+        linkingStrategy: PackageLinkingStrategy?,
         conditions: [PackageCondition],
         linkProduct: Bool
     ) {
@@ -1528,7 +1532,7 @@ extension ResolvedProduct {
     /// - Parameters:
     ///     - environment: The build environment to use to filter dependencies on.
     public func recursivePackageDependencies() -> [ResolvedModule.Dependency] {
-        let initialDependencies = modules.map { ResolvedModule.Dependency.module($0, conditions: []) }
+        let initialDependencies = modules.map { ResolvedModule.Dependency.module($0, linkingStrategy: nil, conditions: []) }
         return try! topologicalSort(initialDependencies) { dependency in
             dependency.packageDependencies
         }.sorted()
@@ -1551,7 +1555,7 @@ extension [ResolvedModule.Dependency] {
                 false
             case (.product(let lhsProduct, _), .product(let rhsProduct, _)):
                 lhsProduct.name < rhsProduct.name
-            case (.module(let lhsTarget, _), .module(let rhsTarget, _)):
+            case (.module(let lhsTarget, _, _), .module(let rhsTarget, _, _)):
                 lhsTarget.name < rhsTarget.name
             }
         }
